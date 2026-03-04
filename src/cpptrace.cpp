@@ -25,6 +25,9 @@
 #include "snippets/snippet.hpp"
 #include "options.hpp"
 
+/* Provides the UnHEIC demangling function */
+#include <extern.hpp>
+
 CPPTRACE_BEGIN_NAMESPACE
     CPPTRACE_FORCE_NO_INLINE
     raw_trace raw_trace::current(std::size_t skip) {
@@ -59,7 +62,7 @@ CPPTRACE_BEGIN_NAMESPACE
         try {
             std::vector<stacktrace_frame> trace = detail::resolve_frames(frames);
             for(auto& frame : trace) {
-                frame.symbol = detail::demangle(frame.symbol, true);
+                frame.symbol = unheic_demangle_symbol(frame.symbol);
             }
             return {std::move(trace)};
         } catch(...) { // NOSONAR
@@ -100,7 +103,7 @@ CPPTRACE_BEGIN_NAMESPACE
         try {
             std::vector<stacktrace_frame> trace = detail::resolve_frames(frames);
             for(auto& frame : trace) {
-                frame.symbol = detail::demangle(frame.symbol, true);
+                frame.symbol = unheic_demangle_symbol(frame.symbol);
             }
             return {std::move(trace)};
         } catch(...) { // NOSONAR
@@ -282,7 +285,7 @@ CPPTRACE_BEGIN_NAMESPACE
             std::vector<frame_ptr> frames = detail::capture_frames(skip + 1, max_depth);
             std::vector<stacktrace_frame> trace = detail::resolve_frames(frames);
             for(auto& frame : trace) {
-                frame.symbol = detail::demangle(frame.symbol, true);
+                frame.symbol = unheic_demangle_symbol(frame.symbol);
             }
             return {std::move(trace)};
         } catch(...) { // NOSONAR
